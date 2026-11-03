@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-s    update_rate: 100  # 整数，不要写成 100.0
+    update_rate: 100  # 整数，不要写成 100.0
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
