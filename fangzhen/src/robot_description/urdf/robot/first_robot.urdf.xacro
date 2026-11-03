@@ -16,13 +16,13 @@
 
 
     <!-- 左右轮 -->
-    <xacro:wheel_xacro prefix="left" parent="base_link" x="0" y="0.11" z="0.02" />
-    <xacro:wheel_xacro prefix="right" parent="base_link" x="0" y="-0.11" z="0.02" />
+    <xacro:wheel_xacro prefix="left" parent="base_link" x="0" y="0.11" z="-0.02" />
+    <xacro:wheel_xacro prefix="right" parent="base_link" x="0" y="-0.11" z="-0.02" />
 
 
     <!-- 前后万向轮 -->
-    <xacro:caster_xacro prefix="front" parent="base_link" x="0.12" y="0.0" z="0.0" />
-    <xacro:caster_xacro prefix="back" parent="base_link" x="-0.12" y="0.0" z="0.0" />
+    <xacro:caster_xacro prefix="front" parent="base_link" x="0.12" y="0.0" z="-0.04" />
+    <xacro:caster_xacro prefix="back" parent="base_link" x="-0.12" y="0.0" z="-0.04" />
     <!-- IMU -->
     <xacro:single_imu
         name="imu"
