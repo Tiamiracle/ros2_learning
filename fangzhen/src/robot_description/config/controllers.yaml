@@ -1,7 +1,6 @@
 controller_manager:
   ros__parameters:
-    use_stamped_vel: false
-    update_rate: 100  # 整数，不要写成 100.0
+s    update_rate: 100  # 整数，不要写成 100.0
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -11,6 +10,8 @@ controller_manager:
 
 diff_drive_controller:
   ros__parameters:
+    use_stamped_vel: false
+
     left_wheel_names: ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]
     

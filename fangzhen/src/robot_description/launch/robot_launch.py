@@ -82,7 +82,7 @@ def generate_launch_description():
             model_arg,
             robot_state_publisher,
             gazebo,
-            rviz_node,
+            # rviz_node,
             spawn_entity,
             joint_state_broadcaster_spawner,  # 然后唤醒状态广播器
             diff_drive_controller_spawner,
