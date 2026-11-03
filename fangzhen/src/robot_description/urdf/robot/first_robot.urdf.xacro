@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="first_robot">
+    <xacro:include filename="base.urdf.xacro" />
+    <xacro:include filename="wheel.urdf.xacro" />
+    <xacro:include filename="caster.urdf.xacro" />
+    <xacro:include filename="imu.urdf.xacro" />
+    <xacro:include filename="laser.urdf.xacro" />
+    <xacro:include filename="camera.urdf.xacro" />
+    <!-- chajian -->
+    <!-- <xacro:include filename="gazebo_control_plugin.xacro" /> -->
+    <xacro:include filename="$(find robot_description)/urdf/ros2_control.xacro" />
+
+
+    <!-- 基座 -->
+    <xacro:base_xacro />
+
+
+    <!-- 左右轮 -->
+    <xacro:wheel_xacro prefix="left" parent="base_link" x="0" y="0.11" z="0.02" />
+    <xacro:wheel_xacro prefix="right" parent="base_link" x="0" y="-0.11" z="0.02" />
+
+
+    <!-- 前后万向轮 -->
+    <xacro:caster_xacro prefix="front" parent="base_link" x="0.12" y="0.0" z="0.0" />
+    <xacro:caster_xacro prefix="back" parent="base_link" x="-0.12" y="0.0" z="0.0" />
+    <!-- IMU -->
+    <xacro:single_imu
+        name="imu"
+        parent="base_link"
+        x="0.0" y="0.0" z="0.06"
+        r="0" p="0" yaw="0" />
+
+    <!-- 激光雷达 -->
+    <xacro:laser_xacro
+        prefix="laser"
+        parent="base_link"
+        x="0.05" y="0.0" z="0.08"
+        r="0" p="0" yaw="0" />
+
+    <!-- 相机 -->
+    <xacro:camera_xacro
+        prefix="camera"
+        parent="base_link"
+        x="0.12" y="0.0" z="0.07"
+        r="0" p="0" yaw="0" />
+    <!-- <xacro:gazebo_control_plugin /> -->
+    <xacro:ros2_control />
+</robot>

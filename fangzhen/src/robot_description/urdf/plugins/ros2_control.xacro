@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="ros2_control">
+        <!-- 声明硬件接口：告诉 ros2_control 我们要控制这两个轮子的速度 -->
+        <ros2_control name="MyRobotSystem" type="system">
+            <hardware>
+                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                <!-- 仿真时，这里留空，Gazebo 插件会自动接管；真机时，这里写你的驱动插件名 -->
+            </hardware>
+
+            <joint name="left_wheel_joint">
+                <command_interface name="velocity" />
+                <state_interface name="velocity" />
+                <state_interface name="position" />
+            </joint>
+
+            <joint name="right_wheel_joint">
+                <command_interface name="velocity" />
+                <state_interface name="velocity" />
+                <state_interface name="position" />
+            </joint>
+        </ros2_control>
+        <gazebo>
+            <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+                <!-- 指向你的 yaml 配置文件 -->
+                <parameters>$(find robot_description)/config/controllers.yaml</parameters>
+            </plugin>
+        </gazebo>
+    </xacro:macro>
+</robot>

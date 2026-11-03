@@ -1,0 +1,10 @@
+# 请求：输入图片
+sensor_msgs/Image input_img
+---
+# 响应
+sensor_msgs/Image result_img       # 画好人脸框的图
+int32 face_num                     # 人脸数量
+int32[] top
+int32[] left
+int32[] right
+int32[] bottom                    
