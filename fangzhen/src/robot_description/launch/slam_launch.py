@@ -11,7 +11,7 @@ def generate_launch_description():
     slam_node = Node(
         package="slam_toolbox",
         executable="async_slam_toolbox_node",
-        name="async_slam_toolbox_node",
+        name="slam_toolbox",
         parameters=[
             slam_yaml,
             {"use_sim_time": True},
