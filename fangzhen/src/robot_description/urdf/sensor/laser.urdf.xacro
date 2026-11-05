@@ -34,7 +34,7 @@
         </joint>
 
         <!-- 第二部分：激光雷达本体，就是你刚才写的这个 -->
-        <link name="${prefix}_laser_link">
+        <link name="${prefix}_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
@@ -58,10 +58,44 @@
                     izz="0.00018" />
             </inertial>
         </link>
+        <gazebo reference="${prefix}_link">
+            <sensor type="ray" name="${prefix}_laser_sensor">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>true</visualize>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>720</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-3.14159</min_angle>
+                            <max_angle>3.14159</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.12</min>
+                        <max>10.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <plugin name="${prefix}_laser_plugin" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <namespace>/</namespace>
+                        <remapping>~/out:=scan</remapping>
+                    </ros>
+                    <output_type>sensor_msgs/LaserScan</output_type>
+                    <frame_name>${prefix}_link</frame_name>
+                </plugin>
+            </sensor>
+        </gazebo>
         <!-- 雷达挂在立柱顶端，z向上挪一点 -->
         <joint name="${prefix}_laser_joint" type="fixed">
             <parent link="${prefix}_cylinder_link" />
-            <child link="${prefix}_laser_link" />
+            <child link="${prefix}_link" />
             <origin xyz="0 0 0.055" rpy="0 0 0" />
         </joint>
     </xacro:macro>

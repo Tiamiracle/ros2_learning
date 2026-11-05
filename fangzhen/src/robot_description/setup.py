@@ -17,7 +17,7 @@ setup(
         # ========== 只保留这一行urdf！递归复制urdf下所有子目录所有xacro/urdf ==========
         ("share/" + package_name + "/urdf", glob("urdf/**/*.xacro", recursive=True)),
         ("share/" + package_name + "/urdf", glob("urdf/**/*.urdf", recursive=True)),
-        ("share/" + package_name + "/config", ["config/controllers.yaml"]),
+        ("share/" + package_name + "/config", glob("config/**/*", recursive=True)),
     ],
     install_requires=["setuptools"],
     zip_safe=True,

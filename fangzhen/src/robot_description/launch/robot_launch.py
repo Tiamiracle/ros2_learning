@@ -9,10 +9,12 @@ import os
 
 def generate_launch_description():
     pkg_dir = get_package_share_directory("robot_description")
-    # 对应你路径 urdf/robot/first_robot.urdf.xacro
     xacro_file = os.path.join(pkg_dir, "urdf", "first_robot.urdf.xacro")
     world_file = os.path.join(pkg_dir, "world", "model.sdf")
+    rviz_config_file = "/home/user/myRos2_learning/fangzhen/rvizconfig/rviz.rviz"
     model_arg = DeclareLaunchArgument("robot_description", default_value=xacro_file)
+
+    # gazebo 先启动，优先把 /clock 发出来
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
@@ -25,6 +27,7 @@ def generate_launch_description():
         ),
         launch_arguments={"world": world_file}.items(),
     )
+
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -32,11 +35,13 @@ def generate_launch_description():
             {
                 "robot_description": Command(
                     ["xacro ", LaunchConfiguration("robot_description")]
-                )
+                ),
+                "use_sim_time": True,  # 补上！！
             }
         ],
         output="screen",
     )
+
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
@@ -46,14 +51,15 @@ def generate_launch_description():
             "-entity",
             "my_robot",
             "-x",
-            "0.0",  # 移到 X=5 的位置
+            "0.0",
             "-y",
-            "2.0",  # 移到 Y=5 的位置
+            "2.0",
             "-z",
-            "0.5",  # 从半米高落下
+            "0.01",  # 改成贴地，不要半空下落
         ],
         output="screen",
     )
+
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -62,8 +68,10 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
+        parameters=[{"use_sim_time": True}],
         output="screen",
     )
+
     diff_drive_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -72,19 +80,27 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
+        parameters=[{"use_sim_time": True}],
         output="screen",
     )
 
-    rviz_node = Node(package="rviz2", executable="rviz2", name="rviz2", output="screen")
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        arguments=["-d", rviz_config_file],
+        name="rviz2",
+        parameters=[{"use_sim_time": True}],  # 补上
+        output="screen",
+    )
 
     return LaunchDescription(
         [
             model_arg,
+            gazebo,  # 第一个启动 Gazebo，先出 /clock
             robot_state_publisher,
-            gazebo,
-            # rviz_node,
             spawn_entity,
-            joint_state_broadcaster_spawner,  # 然后唤醒状态广播器
+            joint_state_broadcaster_spawner,
             diff_drive_controller_spawner,
+            rviz_node,
         ]
     )
