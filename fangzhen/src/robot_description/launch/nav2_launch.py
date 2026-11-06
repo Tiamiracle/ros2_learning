@@ -22,7 +22,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             "use_sim_time": "True",  # 必须使用仿真时间
-            # "use_rviz": "True",  # 自动拉起 RViz
+            "use_rviz": "True",  # 自动拉起 RViz
             "map": map_yaml_file,  # 加载你建好的地图
             "params_file": nav2_params_file,  # 👈 【新增】读取你的自定义配置
             "slam": "False",  # 导航阶段不需要 SLAM

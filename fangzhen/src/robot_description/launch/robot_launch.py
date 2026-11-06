@@ -84,14 +84,14 @@ def generate_launch_description():
         output="screen",
     )
 
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        arguments=["-d", rviz_config_file],
-        name="rviz2",
-        parameters=[{"use_sim_time": True}],  # 补上
-        output="screen",
-    )
+    # rviz_node = Node(
+    #     package="rviz2",
+    #     executable="rviz2",
+    #     arguments=["-d", rviz_config_file],
+    #     name="rviz2",
+    #     parameters=[{"use_sim_time": True}],  # 补上
+    #     output="screen",
+    # )
 
     return LaunchDescription(
         [
@@ -101,6 +101,6 @@ def generate_launch_description():
             spawn_entity,
             joint_state_broadcaster_spawner,
             diff_drive_controller_spawner,
-            rviz_node,
+            # rviz_node,
         ]
     )
