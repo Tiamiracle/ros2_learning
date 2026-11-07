@@ -30,5 +30,3 @@ diff_drive_controller:
     base_frame_id: "base_footprint"   # 你的底盘根节点
     odom_frame_id: "odom"  
     
-    cmd_vel_topic: "/cmd_vel"
-    odom_topic: "/odom"

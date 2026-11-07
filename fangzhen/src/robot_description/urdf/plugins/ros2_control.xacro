@@ -24,6 +24,10 @@
             <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
                 <!-- 指向你的 yaml 配置文件 -->
                 <parameters>$(find robot_description)/config/controllers.yaml</parameters>
+                <ros>
+                    <remapping>/diff_drive_controller/cmd_vel_unstamped:=/cmd_vel</remapping>
+                    <remapping>/diff_drive_controller/odom:=/odom</remapping>
+                </ros>
             </plugin>
         </gazebo>
     </xacro:macro>
