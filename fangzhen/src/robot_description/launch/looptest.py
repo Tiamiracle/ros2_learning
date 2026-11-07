@@ -3,20 +3,56 @@ import time
 import math
 from geometry_msgs.msg import PoseStamped
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
+import os
+import subprocess
+from threading import Lock
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
+import cv2
+
+CAMERA_TOPIC = "/camera_sensor/image_raw"
+SAVE_ROOT = "./patrol_photos"
+TTS_VOICE = "zh"
+
+bridge = CvBridge()
+img_lock = Lock()
+latest_img = None
+
+
+def image_callback(msg: Image):
+    global latest_img
+    try:
+        cv_img = bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        with img_lock:
+            latest_img = cv_img
+    except Exception as e:
+        print(f"cv bridge error: {e}")
 
 
 # --- 占位函数：语音播报 ---
 def play_voice(text):
     # 仿真环境常用 espeak，如果没有安装请 sudo apt install espeak
     print(f"🔊 语音播报: {text}")
+    cmd = ["espeak-ng", "-v", TTS_VOICE, text]
+    subprocess.run(cmd)
     # import os
     # os.system(f'espeak -v zh "{text}" &')
 
 
 # --- 占位函数：拍照 ---
 def take_photo(point_name):
-    print(f"📸 拍照: 正在保存 {point_name} 的图像...")
-    # 这里之后接入你的 cv_bridge 和 cv2.imwrite 逻辑
+    global latest_img
+    os.makedirs(SAVE_ROOT, exist_ok=True)
+    with img_lock:
+        if latest_img is None:
+            print("⚠️ 还没有收到相机图像，拍照失败！")
+            return
+        snap = latest_img.copy()
+    stamp = time.strftime("%Y%m%d_%H%M%S")
+    filename = f"{point_name}_{stamp}.jpg"
+    full_path = os.path.join(SAVE_ROOT, filename)
+    cv2.imwrite(full_path, snap)
+    print(f"📸 照片已保存: {full_path}")
 
 
 # --- 辅助函数：快速生成 PoseStamped 目标点 ---
@@ -47,6 +83,7 @@ def run_patrol_task(navigator, patrol_points, home_pose):
             # 发送目标并等待完成
             navigator.goToPose(target_pose)
             while not navigator.isTaskComplete():
+                rclpy.spin_once(navigator, timeout_sec=0.05)
                 # 在等待时可以加上 sleep，防止 CPU 占用过高
                 time.sleep(0.1)
 
@@ -54,6 +91,7 @@ def run_patrol_task(navigator, patrol_points, home_pose):
             if result == TaskResult.SUCCEEDED:
                 navigator.get_logger().info(f"✅ 已到达 {point_name}")
                 play_voice(f"已到达{point_name}")
+                time.sleep(0.5)
                 take_photo(point_name)
             else:
                 navigator.get_logger().warn(f"❌ 前往 {point_name} 失败，跳过该点")
@@ -64,6 +102,7 @@ def run_patrol_task(navigator, patrol_points, home_pose):
 
         navigator.goToPose(home_pose)
         while not navigator.isTaskComplete():
+            rclpy.spin_once(navigator, timeout_sec=0.05)
             time.sleep(0.1)
 
         navigator.get_logger().info("🏠 已返回初始位置。")
@@ -83,7 +122,7 @@ def main(args=None):
     # 等待 Nav2 激活（重要！否则发指令无效）
     navigator.get_logger().info("⏳ 等待 Nav2 系统激活...")
     navigator.waitUntilNav2Active()
-
+    img_sub = navigator.create_subscription(Image, CAMERA_TOPIC, image_callback, 10)
     # 定义初始位置 (假设是 0,0,0)
     home_pose = create_pose(navigator, 0.0, 0.0, 0.0)
 
