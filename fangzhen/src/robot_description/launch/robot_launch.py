@@ -56,6 +56,8 @@ def generate_launch_description():
             "2.0",
             "-z",
             "0.01",  # 改成贴地，不要半空下落
+            "-Y",
+            "0.0",
         ],
         output="screen",
     )
